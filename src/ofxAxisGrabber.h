@@ -46,10 +46,15 @@ public:
 		MJPG,
 		H264
 	};
+	enum Protocol{
+		HTTP,
+		RTSP
+	};
 	void triggerAutoFocus();
 	void setAuth(string user, string pwd); // without authentication parameter changing won't work
 	void setParametersRefreshRate(int ms);  //default 0 no refresh
 	void setCodec(AxisCodec codec);
+	void setProtocol(Protocol protocol);
 	void setCompression(int compression=30);
 	void setCameraAddress(string address);
 	string getCameraAddress();
@@ -106,6 +111,7 @@ private:
 	string user,pwd;
 	int desiredFramerate;
 	AxisCodec codec;
+	Protocol protocol;
 
 	string cameraAddress;
 

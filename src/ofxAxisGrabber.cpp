@@ -18,6 +18,7 @@ ofxAxisGrabber::ofxAxisGrabber() {
 	startTimeOneSecMicros = 0;
 	framesInOneSec = 0;
 	codec = H264;
+	protocol = HTTP;
 	updating = false;
 	started = false;
 
@@ -75,35 +76,45 @@ bool ofxAxisGrabber::initGrabber(int w, int h){
 
 	string codecStr = codec==MJPG?"mjpg":"h264";
 	stringstream url;
-	url << "rtsp://" << cameraAddress <<
-			"/axis-media/media.amp?"
-			"videocodec=" << codecStr <<
-			"&resolution=" << w << "x" << h <<
-			"&compression=" << compression <<
-			"&mirror=0"
-			"&rotation=180"
-			"&textposition=top"
-			"&textbackgroundcolor=black"
-			"&textcolor=white"
-			"&text=0"
-			"&clock=0"
-			"&date=0"
-			"&overlayimage=0"
-			"&fps=" << desiredFramerate <<
-			"&audio=0"
-			"&keyframe_interval=8"
-			"&videobitrate=0"
-			"&maxframesize=0";
+	if(protocol==RTSP){
+		url << "rtsp://" << cameraAddress <<
+				"/axis-media/media.amp?";
+	}else{
+		url << "http://" << cameraAddress <<
+				"/axis-cgi/mjpg/video.cgi?";
+	}
+	url << "videocodec=" << codecStr <<
+	"&resolution=" << w << "x" << h <<
+	"&compression=" << compression <<
+	"&mirror=0"
+	"&rotation=0"
+	"&textposition=top"
+	"&textbackgroundcolor=black"
+	"&textcolor=white"
+	"&text=0"
+	"&clock=0"
+	"&date=0"
+	"&overlayimage=0"
+	"&fps=" << desiredFramerate <<
+	"&audio=0"
+	"&keyframe_interval=8"
+	"&videobitrate=0"
+	"&maxframesize=0";
 
 	stringstream pipeline;
-	pipeline << "rtspsrc location=\"" << url.str() << "\" latency=0 ! decodebin ! videoconvert ! queue ";
+	if(protocol==HTTP){
+		pipeline << "souphttpsrc location=\""<< url.str() << "\"";
+	}else{
+		pipeline << "rtspsrc location=\""<< url.str() << "\" latency=0";
+	}
+	pipeline <<" ! decodebin ! videoconvert ! videoscale ";
 
 	ofLogNotice("ofxAxisGrabber") << "pipeline: ";
 	ofLogNotice("ofxAxisGrabber") << pipeline.str();
 	bool ret = gst.setPipeline(pipeline.str(),24,true,w,h);
-#if OF_VERSION_MINOR>8 || (OF_VERSION_MINOR==0 && OF_VERSION_PATCH>0)
-	gst.startPipeline();
-#endif
+//#if OF_VERSION_MINOR>8 || (OF_VERSION_MINOR==0 && OF_VERSION_PATCH>0)
+	ret = gst.startPipeline();
+//#endif
 
 	//gst.loadMovie("http://10.42.0.23/axis-cgi/mjpg/video.cgi?fps=30&nbrofframes=0&resolution=640x480");
 	//gst.loadMovie("rtsp://10.42.0.23:554/axis-media/media.amp?videocodec=h264");
