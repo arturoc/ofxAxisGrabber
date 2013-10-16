@@ -40,8 +40,8 @@ ofxAxisGrabber::ofxAxisGrabber() {
 }
 
 //overwritten from ofBaseVideoGrabber
-void ofxAxisGrabber::listDevices(){
-
+std::vector<ofVideoDevice> ofxAxisGrabber::listDevices(){
+	return std::vector<ofVideoDevice>();
 }
 
 
@@ -96,11 +96,14 @@ bool ofxAxisGrabber::initGrabber(int w, int h){
 			"&maxframesize=0";
 
 	stringstream pipeline;
-	pipeline << "rtspsrc location=\"" << url.str() << "\" latency=0 ! decodebin2 ! ffmpegcolorspace ! queue ";
+	pipeline << "rtspsrc location=\"" << url.str() << "\" latency=0 ! decodebin ! videoconvert ! queue ";
 
 	ofLogNotice("ofxAxisGrabber") << "pipeline: ";
 	ofLogNotice("ofxAxisGrabber") << pipeline.str();
 	bool ret = gst.setPipeline(pipeline.str(),24,true,w,h);
+#if OF_VERSION_MINOR>8 || (OF_VERSION_MINOR==0 && OF_VERSION_PATCH>0)
+	gst.startPipeline();
+#endif
 
 	//gst.loadMovie("http://10.42.0.23/axis-cgi/mjpg/video.cgi?fps=30&nbrofframes=0&resolution=640x480");
 	//gst.loadMovie("rtsp://10.42.0.23:554/axis-media/media.amp?videocodec=h264");

@@ -120,23 +120,19 @@ void ofxAxisGui::draw(float x, float y, float _w, float _h){
 	ofPopStyle();
 }
 
-void ofxAxisGui::resetPressed(bool & pressed){
-	if(!pressed)
+void ofxAxisGui::resetPressed(){
+	resetCamera();
+}
+
+void ofxAxisGui::autofocusPressed(){
+	axis->triggerAutoFocus();
+}
+
+void ofxAxisGui::changeIpPressed(){
+	string newAddress = ofSystemTextBoxDialog("ip", address);
+	if(string(address) != newAddress){
+		address = newAddress;
 		resetCamera();
-}
-
-void ofxAxisGui::autofocusPressed(bool & pressed){
-	if(!pressed)
-		axis->triggerAutoFocus();
-}
-
-void ofxAxisGui::changeIpPressed(bool & pressed){
-	if(!pressed){
-		string newAddress = ofSystemTextBoxDialog("ip", address);
-		if(string(address) != newAddress){
-			address = newAddress;
-			resetCamera();
-		}
 	}
 }
 

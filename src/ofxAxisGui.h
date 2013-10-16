@@ -36,10 +36,10 @@ public:
 
 private:
 	void resetCamera();
-	void autofocusPressed(bool & pressed);
-	void changeIpPressed(bool & pressed);
+	void autofocusPressed();
+	void changeIpPressed();
 	void resolutionChanged(int & resolution);
-	void resetPressed(bool & pressed);
+	void resetPressed();
 
 	void mousePressed(ofMouseEventArgs & mouse);
 	void mouseReleased(ofMouseEventArgs & mouse);

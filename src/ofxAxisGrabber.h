@@ -19,7 +19,7 @@ public:
 	ofxAxisGrabber();
 
 	//overwritten from ofBaseVideoGrabber
-	void	listDevices();
+	std::vector<ofVideoDevice>	listDevices();
 	bool	initGrabber(int w, int h);
 	void	update();
 	bool	isFrameNew();
